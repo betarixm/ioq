@@ -1,0 +1,34 @@
+version: '3.3'
+
+services:
+  db:
+    image: postgres:latest
+    volumes:
+      - django_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: 'ioq'
+      POSTGRES_PASSWORD: (Replace with your db password)
+
+  web:
+    build: .
+    depends_on:
+      - db
+
+    environment:
+      DJANGO_SECRET_KEY: (Replace with your secret key)
+      DJANGO_DEBUG: 'False'
+      DJANGO_ALLOWED_HOSTS: (Replace with your allowed hosts)
+      POSTGRES_DB: 'ioq'
+      POSTGRES_PASSWORD: (Replace with your db password)
+
+    volumes:
+      - ./static:/static
+      - ./upload:/upload
+
+    command: ["/entry/wait-for-it.sh", "db:5432", "--", "/entry/entrypoint.sh"]
+
+    ports:
+      - 8000:8000
+
+volumes:
+  studyplusorkr_db:
